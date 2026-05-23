@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+node_modules/
+dist/
+build/
+*.db
+media/uploads/*
+media/evidence/*
+media/plate_crops/*
+!media/uploads/.gitkeep
+!media/evidence/.gitkeep
+!media/plate_crops/.gitkeep
+
