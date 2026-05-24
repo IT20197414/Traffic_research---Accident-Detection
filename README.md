@@ -92,6 +92,36 @@ python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 
 The dashboard displays whether an incident was detected by YOLO or by fallback logic, along with model name, confidence score, frame timestamp, and annotated evidence image.
 
+## Improving Model Accuracy
+
+The first trained model is suitable for integration testing, but accuracy depends heavily on the amount and quality of labeled traffic footage. To improve the model, collect both accident and normal-traffic videos, extract candidate frames, label accident regions, and retrain.
+
+Extract frames from a video or folder of videos:
+
+```powershell
+python backend\scripts\extract_video_frames.py --input "D:\path\to\traffic_video.mp4" --every-seconds 1
+```
+
+Extracted frames are written to:
+
+```text
+datasets\frame_candidates
+```
+
+Scan a video with the current trained model and save detections for review:
+
+```powershell
+python backend\scripts\scan_video_with_model.py --video "D:\path\to\traffic_video.mp4"
+```
+
+Detection reports and annotated snapshots are written to:
+
+```text
+datasets\video_scans
+```
+
+These generated folders are ignored by Git because they are local data-preparation artifacts.
+
 ## Run The Application
 
 Start the backend with the local `.env` file:

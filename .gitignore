@@ -19,5 +19,8 @@ media/plate_crops/*
 !media/evidence/.gitkeep
 !media/plate_crops/.gitkeep
 datasets/accident_detection/
+datasets/frame_candidates/
+datasets/video_scans/
+datasets/raw_videos/
 trimmed_videos/
 videoplayback*.mp4
