@@ -1,11 +1,16 @@
 __pycache__/
 *.pyc
+.env
+.env.*
+!.env.example
 .pytest_cache/
+runs/
 .venv/
 venv/
 node_modules/
 dist/
 build/
+yolov8n.pt
 *.db
 media/uploads/*
 media/evidence/*
@@ -13,4 +18,6 @@ media/plate_crops/*
 !media/uploads/.gitkeep
 !media/evidence/.gitkeep
 !media/plate_crops/.gitkeep
-
+datasets/accident_detection/
+trimmed_videos/
+videoplayback*.mp4

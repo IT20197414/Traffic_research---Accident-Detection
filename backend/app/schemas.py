@@ -30,6 +30,10 @@ class Incident(BaseModel):
     detected_at: str
     accident_confidence: float
     evidence_image: str
+    detection_source: str = "fallback"
+    model_name: str | None = None
+    accident_frame_second: float | None = None
+    evidence_overlay_image: str | None = None
     uploaded_video: str
     email_status: str
     police_station_name: str | None = None
@@ -47,4 +51,3 @@ class EmailLog(BaseModel):
     provider: str
     sent_at: str
     error: str | None = None
-

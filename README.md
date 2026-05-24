@@ -7,7 +7,7 @@ This project was developed as part of a final year research project and demonstr
 ## Features
 
 - Upload and analyze traffic video footage.
-- Detect accident evidence frames using OpenCV and an optional YOLO model.
+- Detect accident evidence frames using a trained YOLOv8 model, with an OpenCV fallback for local testing.
 - Capture and store accident evidence images.
 - Extract visible vehicle number plate information with confidence values.
 - Store camera profiles, incident records, detected vehicles, and email logs in SQLite.
@@ -37,9 +37,11 @@ This project was developed as part of a final year research project and demonstr
 ```text
 backend/          FastAPI application, analysis services, database layer, tests
 frontend/         React dashboard
+backend/models/   Trained YOLO model location
 samples/          Sample traffic video for local testing
 media/            Runtime storage for uploads, evidence images, and plate crops
 requirements.txt  Python dependencies
+run_backend.ps1   Local backend startup script that loads .env
 ```
 
 ## Setup
@@ -51,16 +53,52 @@ python -m venv .venv
 pip install -r requirements.txt
 npm install --prefix frontend
 python backend\scripts\generate_sample_video.py
+Copy-Item .env.example .env
 ```
+
+Update `.env` with your local model path and email settings. Do not commit `.env`.
+
+## Accident Detection Model
+
+The application supports a trained YOLOv8 accident detector. A clean YOLO dataset can be prepared from the older accident dataset with:
+
+```powershell
+python backend\scripts\prepare_accident_dataset.py
+python backend\scripts\validate_accident_dataset.py
+```
+
+Train a lightweight YOLOv8 model locally:
+
+```powershell
+python backend\scripts\train_accident_model.py
+```
+
+The trained model is saved to:
+
+```text
+backend\models\accident_yolov8.pt
+```
+
+The trained model file is included in `backend/models` for local testing. The generated training dataset and YOLO run outputs are ignored because they can be recreated with the scripts above.
+
+Start the backend with the trained model enabled either by setting `ACCIDENT_MODEL_PATH` manually or by using `.env` with `run_backend.ps1`.
+
+Manual environment variable:
+
+```powershell
+$env:ACCIDENT_MODEL_PATH="D:\Projects\Traffic_Project\backend\models\accident_yolov8.pt"
+python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+```
+
+The dashboard displays whether an incident was detected by YOLO or by fallback logic, along with model name, confidence score, frame timestamp, and annotated evidence image.
 
 ## Run The Application
 
-Start the backend:
+Start the backend with the local `.env` file:
 
 ```powershell
 cd D:\Projects\Traffic_Project
-.\.venv\Scripts\Activate.ps1
-python -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
+.\run_backend.ps1
 ```
 
 Start the frontend:
@@ -78,22 +116,26 @@ http://127.0.0.1:5173
 
 ## Email Configuration
 
-By default, the system uses mock email mode so the alert workflow can be tested without real SMTP credentials.
+By default, the system can use mock email mode so the alert workflow can be tested without real SMTP credentials.
 
-To send real emails, configure SMTP environment variables before starting the backend:
+For real emails, set these values in `.env`:
 
-```powershell
-$env:EMAIL_MODE="smtp"
-$env:SMTP_HOST="smtp.gmail.com"
-$env:SMTP_PORT="587"
-$env:SMTP_USERNAME="your-sender-email@gmail.com"
-$env:SMTP_PASSWORD="your-gmail-app-password"
-$env:SMTP_FROM="your-sender-email@gmail.com"
-
-python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+```text
+EMAIL_MODE=smtp
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-sender-email@gmail.com
+SMTP_PASSWORD=your-gmail-app-password
+SMTP_FROM=your-sender-email@gmail.com
 ```
 
-Do not commit real email passwords or app passwords to the repository.
+Then start the backend:
+
+```powershell
+.\run_backend.ps1
+```
+
+Do not commit real email passwords or app passwords to the repository. `.env` is ignored by Git; `.env.example` is safe to commit because it only contains placeholders.
 
 ## Testing
 

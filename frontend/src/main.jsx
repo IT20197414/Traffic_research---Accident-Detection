@@ -85,7 +85,7 @@ function App() {
     <main className="shell">
       <section className="topbar">
         <div>
-          <p className="eyebrow">Final Year Research Demo</p>
+          <p className="eyebrow">Traffic Accident Monitoring System</p>
           <h1>Accident Alert Dashboard</h1>
         </div>
         <button className="iconButton" onClick={loadInitialData} title="Refresh incidents">
@@ -171,10 +171,19 @@ function IncidentDetail({ incident, onSendEmail, busy, emailPreview }) {
   return (
     <div className="incidentDetail">
       <div className="evidenceFrame">
-        <img src={`${API_BASE}${incident.evidence_image}`} alt="Accident evidence frame" />
+        <img
+          src={`${API_BASE}${incident.evidence_overlay_image || incident.evidence_image}`}
+          alt="Accident evidence frame"
+        />
       </div>
       <div className="metrics">
         <Metric label="Confidence" value={`${Math.round(incident.accident_confidence * 100)}%`} />
+        <Metric label="Detection" value={incident.detection_source || "fallback"} />
+        <Metric label="Model" value={incident.model_name || "fallback heuristic"} />
+        <Metric
+          label="Frame time"
+          value={incident.accident_frame_second == null ? "not available" : `${incident.accident_frame_second}s`}
+        />
         <Metric label="Email" value={incident.email_status.replace("_", " ")} />
         <Metric label="Police station" value={incident.police_station_name || "Assigned station"} />
       </div>
@@ -232,4 +241,3 @@ function Metric({ label, value }) {
 }
 
 createRoot(document.getElementById("root")).render(<App />);
-

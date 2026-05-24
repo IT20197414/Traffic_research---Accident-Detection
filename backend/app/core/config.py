@@ -14,6 +14,7 @@ class Settings:
     evidence_dir = media_root / "evidence"
     plate_crops_dir = media_root / "plate_crops"
     accident_model_path = os.getenv("ACCIDENT_MODEL_PATH", "")
+    accident_fallback_enabled = os.getenv("ACCIDENT_FALLBACK_ENABLED", "true").lower() in {"1", "true", "yes", "on"}
     email_mode = os.getenv("EMAIL_MODE", "mock").lower()
     smtp_host = os.getenv("SMTP_HOST", "")
     smtp_port = int(os.getenv("SMTP_PORT", "587"))
@@ -35,4 +36,3 @@ def get_settings() -> Settings:
     settings.evidence_dir.mkdir(parents=True, exist_ok=True)
     settings.plate_crops_dir.mkdir(parents=True, exist_ok=True)
     return settings
-

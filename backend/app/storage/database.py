@@ -57,6 +57,10 @@ def init_db() -> None:
                 detected_at TEXT NOT NULL,
                 accident_confidence REAL NOT NULL,
                 evidence_image TEXT NOT NULL,
+                detection_source TEXT NOT NULL DEFAULT 'fallback',
+                model_name TEXT,
+                accident_frame_second REAL,
+                evidence_overlay_image TEXT,
                 uploaded_video TEXT NOT NULL,
                 email_status TEXT NOT NULL DEFAULT 'not_sent',
                 FOREIGN KEY (camera_profile_id) REFERENCES camera_profiles(id)
@@ -86,6 +90,7 @@ def init_db() -> None:
             );
             """
         )
+        _ensure_incident_columns(connection)
 
         count = connection.execute("SELECT COUNT(*) AS total FROM camera_profiles").fetchone()["total"]
         if count == 0:
@@ -123,3 +128,18 @@ def init_db() -> None:
                 ],
             )
 
+
+def _ensure_incident_columns(connection: sqlite3.Connection) -> None:
+    existing = {
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(incidents)").fetchall()
+    }
+    additions = {
+        "detection_source": "TEXT NOT NULL DEFAULT 'fallback'",
+        "model_name": "TEXT",
+        "accident_frame_second": "REAL",
+        "evidence_overlay_image": "TEXT",
+    }
+    for column, definition in additions.items():
+        if column not in existing:
+            connection.execute(f"ALTER TABLE incidents ADD COLUMN {column} {definition}")

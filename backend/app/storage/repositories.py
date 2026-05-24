@@ -23,10 +23,12 @@ def create_incident(incident: dict[str, Any], vehicles: list[dict[str, Any]]) ->
             """
             INSERT INTO incidents
                 (id, camera_profile_id, location_name, latitude, longitude, detected_at,
-                 accident_confidence, evidence_image, uploaded_video, email_status)
+                 accident_confidence, evidence_image, detection_source, model_name,
+                 accident_frame_second, evidence_overlay_image, uploaded_video, email_status)
             VALUES
                 (:id, :camera_profile_id, :location_name, :latitude, :longitude, :detected_at,
-                 :accident_confidence, :evidence_image, :uploaded_video, :email_status)
+                 :accident_confidence, :evidence_image, :detection_source, :model_name,
+                 :accident_frame_second, :evidence_overlay_image, :uploaded_video, :email_status)
             """,
             incident,
         )
@@ -113,4 +115,3 @@ def list_email_logs(incident_id: str) -> list[dict[str, Any]]:
             (incident_id,),
         ).fetchall()
         return [dict(row) for row in rows]
-
