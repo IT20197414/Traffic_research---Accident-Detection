@@ -32,12 +32,21 @@ This project was developed as part of a final year research project and demonstr
 5. The user can send an automated email alert to the mapped police station email address.
 6. The dashboard displays incident history, evidence, detected plates, and email status.
 
+## System Architecture
+
+The accident detection workflow is designed around three main stages: accident identification from road camera footage, vehicle number plate extraction, and incident alert delivery to the mapped police station.
+
+![Accident detection workflow](docs/assets/accident-detection-workflow.jpg)
+
+The alert payload includes accident evidence, detected number plate information, location, date, and time. These details are stored by the backend and can be sent as an automated email alert.
+
 ## Project Structure
 
 ```text
 backend/          FastAPI application, analysis services, database layer, tests
 frontend/         React dashboard
 backend/models/   Trained YOLO model location
+docs/assets/      Project diagrams and README images
 samples/          Sample traffic video for local testing
 media/            Runtime storage for uploads, evidence images, and plate crops
 requirements.txt  Python dependencies
